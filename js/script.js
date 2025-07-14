@@ -3,13 +3,15 @@ const wordText = document.querySelector(".word"),
     timeText = document.querySelector(".time b"),
     inputField = document.querySelector("input"),
     refreshBtn = document.querySelector(".refresh-word"),
-    checkBtn = document.querySelector(".check-word");
+    checkBtn = document.querySelector(".check-word"),
+    showHintBtn = document.querySelector(".show-hint"); // New hint button
 
 let correctWord, timer;
 
+// Initialize countdown timer
 const initTimer = (maxTime) => {
     clearInterval(timer);
-    let timeLeft = maxTime; // Timer countdown value
+    let timeLeft = maxTime;
     timer = setInterval(() => {
         if (timeLeft > 0) {
             timeLeft--;
@@ -24,12 +26,15 @@ const initTimer = (maxTime) => {
     }, 1000);
 };
 
+// Start or refresh the game
 const initGame = () => {
-    initTimer(120); // 2 minutes = 120 seconds
+    initTimer(120); // 2 minutes
+
+    // Get random word object from the words list
     let randomObj = words[Math.floor(Math.random() * words.length)];
     let wordArray = randomObj.word.split("");
-    
-    // Shuffle the word using Fisher-Yates algorithm
+
+    // Shuffle using Fisher-Yates
     for (let i = wordArray.length - 1; i > 0; i--) {
         let j = Math.floor(Math.random() * (i + 1));
         [wordArray[i], wordArray[j]] = [wordArray[j], wordArray[i]];
@@ -37,16 +42,16 @@ const initGame = () => {
 
     wordText.innerText = wordArray.join("");
     hintText.innerText = randomObj.hint;
+    document.querySelector(".hint").style.visibility = "hidden"; // Hide hint initially
     correctWord = randomObj.word.toLowerCase();
     inputField.value = "";
     inputField.setAttribute("maxlength", correctWord.length);
 };
 
+// Check user input against correct word
 const checkWord = () => {
     let userWord = inputField.value.toLowerCase();
-    if (!userWord) {
-        return alert("Please enter the word to check!");
-    }
+    if (!userWord) return alert("Please enter the word to check!");
 
     if (userWord !== correctWord) {
         return alert(`Oops! ${userWord} is not a correct word`);
@@ -56,8 +61,14 @@ const checkWord = () => {
     initGame();
 };
 
+// Show Hint button logic
+showHintBtn.addEventListener("click", () => {
+    document.querySelector(".hint").style.visibility = "visible";
+});
+
+// Button event listeners
 refreshBtn.addEventListener("click", initGame);
 checkBtn.addEventListener("click", checkWord);
 
-// Initialize the game on page load
+// Start the game on load
 initGame();
